@@ -16,3 +16,8 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Fail-closed Server capability negotiation and strict structured-error parsing.
 - Prettier format checks, contract-pin verification, accessibility smoke checks,
   dependency audit, license inventory, and SBOM CI.
+
+### Fixed
+
+- Playwright preview startup now invokes Vite directly so hosted CI can detect
+  the web server reliably.
