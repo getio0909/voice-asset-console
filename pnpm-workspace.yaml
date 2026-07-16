@@ -1,0 +1,10 @@
+packages:
+  - .
+
+minimumReleaseAge: 2880
+
+# Keep Vue compiler packages aligned with the runtime patch release.
+overrides:
+  '@vue/compiler-core': 3.5.39
+  '@vue/compiler-dom': 3.5.39
+  '@vue/shared': 3.5.39

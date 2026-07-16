@@ -1,0 +1,54 @@
+{
+  "name": "voice-asset-console",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-or-later",
+  "engines": {
+    "node": "^22.18.0 || >=24.12.0"
+  },
+  "packageManager": "pnpm@11.5.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "run-p typecheck build-only",
+    "build-only": "vite build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --max-warnings=0",
+    "test": "vitest run",
+    "test:unit": "vitest",
+    "test:e2e": "pnpm run build && playwright test",
+    "contract:check": "node scripts/check-contract-version.mjs",
+    "verify": "run-s format:check contract:check lint test build licenses:check",
+    "licenses:check": "node scripts/check-licenses.mjs",
+    "licenses:report": "node scripts/check-licenses.mjs --output third-party-licenses.json"
+  },
+  "dependencies": {
+    "pinia": "3.0.4",
+    "vue": "3.5.39",
+    "vue-router": "5.1.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.12.1",
+    "@playwright/test": "^1.61.1",
+    "@tsconfig/node24": "^24.0.4",
+    "@types/node": "^24.0.0",
+    "@vitejs/plugin-vue": "6.0.7",
+    "@vitest/eslint-plugin": "^1.6.23",
+    "@vue/eslint-config-typescript": "^14.9.0",
+    "@vue/test-utils": "^2.4.11",
+    "@vue/tsconfig": "^0.9.1",
+    "eslint": "^10.7.0",
+    "eslint-plugin-playwright": "^2.10.5",
+    "eslint-plugin-vue": "^10.9.2",
+    "jsdom": "^29.1.1",
+    "npm-run-all2": "^9.0.2",
+    "prettier": "3.9.5",
+    "typescript": "~6.0.3",
+    "vite": "^8.1.4",
+    "vitest": "^4.1.10",
+    "vue-tsc": "^3.3.7"
+  }
+}

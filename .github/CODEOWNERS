@@ -1,0 +1,6 @@
+# Initial repository owner. Replace with a maintainer team when governance is formed.
+* @getio0909
+
+# Security-sensitive boundaries require the same owner review.
+/src/api/ @getio0909
+/.github/ @getio0909
