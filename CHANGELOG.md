@@ -6,6 +6,10 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Update the OCI release verifier to safely dereference the standard nested
+  image-index layout emitted by hosted BuildKit while retaining exact
+  `linux/amd64` and `linux/arm64` platform checks.
+
 - Allow semver prerelease tags to carry the package's base version and disable
   default BuildKit attestations while explicitly selecting OCI media types
   before strict multi-platform OCI verification.
