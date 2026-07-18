@@ -44,7 +44,10 @@ done
 
 cd -- "$repo_root"
 package_version=$(node -p "require('./package.json').version")
-[[ $version == "v$package_version" ]] ||
+base_version=${version#v}
+base_version=${base_version%%-*}
+base_version=${base_version%%+*}
+[[ $base_version == "$package_version" ]] ||
   fail "tag $version does not match package version v$package_version"
 [[ -f dist/index.html ]] || fail "dist/index.html is missing; run pnpm build first"
 

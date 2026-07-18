@@ -25,7 +25,10 @@ done
 repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
 cd -- "$repo_root"
 package_version=$(node -p "require('./package.json').version")
-[[ $version == "v$package_version" ]] ||
+base_version=${version#v}
+base_version=${base_version%%-*}
+base_version=${base_version%%+*}
+[[ $base_version == "$package_version" ]] ||
   fail "tag $version does not match package version v$package_version"
 
 dist_dir="$repo_root/dist"
