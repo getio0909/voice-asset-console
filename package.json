@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "pinia": "3.0.4",
+    "qrcode": "1.5.4",
     "vue": "3.5.39",
     "vue-router": "5.1.0"
   },
@@ -35,6 +36,7 @@
     "@playwright/test": "^1.61.1",
     "@tsconfig/node24": "^24.0.4",
     "@types/node": "^24.0.0",
+    "@types/qrcode": "1.5.5",
     "@vitejs/plugin-vue": "6.0.7",
     "@vitest/eslint-plugin": "^1.6.23",
     "@vue/eslint-config-typescript": "^14.9.0",

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import QRCode from 'qrcode'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 
 import { useAssetsStore } from '@/stores/assets'
@@ -12,6 +13,33 @@ const sessionsStore = useSessionsStore()
 const router = useRouter()
 const showPairingPayload = ref(false)
 const copyStatus = ref('')
+const pairingQrCanvas = ref<HTMLCanvasElement | null>(null)
+const pairingQrError = ref('')
+
+watch(
+  () => sessionsStore.pairingSession?.payload,
+  async (payload) => {
+    pairingQrError.value = ''
+    await nextTick()
+    const canvas = pairingQrCanvas.value
+    if (!canvas) {
+      return
+    }
+    if (!payload) {
+      return
+    }
+    try {
+      await QRCode.toCanvas(canvas, payload, {
+        errorCorrectionLevel: 'M',
+        margin: 2,
+        width: 240,
+      })
+    } catch {
+      pairingQrError.value = 'The QR code could not be rendered. Copy the payload instead.'
+    }
+  },
+  { flush: 'post' },
+)
 
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat(undefined, {
@@ -150,8 +178,9 @@ async function logout(): Promise<void> {
           <span class="status-pill">5 minute expiry</span>
         </div>
         <p>
-          Create a short-lived payload, copy it, and paste it into the Android app's server-profile
-          pairing field. Creating another payload invalidates the previous unclaimed one.
+          Create a short-lived payload, scan its QR code with Android, or copy and paste it into the
+          app's server-profile pairing field. Creating another payload invalidates the previous
+          unclaimed one.
         </p>
         <button
           data-testid="create-pairing"
@@ -170,6 +199,23 @@ async function logout(): Promise<void> {
               It expires at {{ formatDate(sessionsStore.pairingSession.expires_at) }} and is never
               written to browser storage. Clearing it here does not extend or renew its expiry.
             </p>
+          </div>
+          <div class="pairing-qr" aria-labelledby="pairing-qr-title">
+            <div>
+              <span class="eyebrow">Camera handoff</span>
+              <h3 id="pairing-qr-title">Scan with the Android app</h3>
+              <p>Keep this tab visible while the Android scanner reads the one-time code.</p>
+            </div>
+            <canvas
+              ref="pairingQrCanvas"
+              data-testid="pairing-qr"
+              class="pairing-qr__canvas"
+              role="img"
+              aria-label="One-time Android pairing QR code"
+              width="240"
+              height="240"
+            />
+            <p v-if="pairingQrError" class="error-message" role="alert">{{ pairingQrError }}</p>
           </div>
           <label class="field">
             <span>One-time pairing payload</span>

@@ -14,11 +14,13 @@ const apiMocks = vi.hoisted(() => ({
   listDeviceSessions: vi.fn(),
   revokeDeviceSession: vi.fn(),
 }))
+const qrMocks = vi.hoisted(() => ({ toCanvas: vi.fn() }))
 
 vi.mock('@/api/client', async (importOriginal) => {
   const actual = await importOriginal()
   return { ...(actual as object), apiClient: apiMocks }
 })
+vi.mock('qrcode', () => ({ default: qrMocks }))
 
 let pairing: PairingSession
 
@@ -33,6 +35,7 @@ describe('SessionsView', () => {
     apiMocks.listDeviceSessions.mockResolvedValue({ items: [] })
     apiMocks.createPairingSession.mockResolvedValue(pairing)
     apiMocks.revokeDeviceSession.mockResolvedValue(undefined)
+    qrMocks.toCanvas.mockResolvedValue(undefined)
   })
 
   it('masks, copies, clears, and discards the one-time pairing payload on unmount', async () => {
@@ -70,6 +73,8 @@ describe('SessionsView', () => {
     const input = wrapper.get<HTMLInputElement>('[data-testid="pairing-payload"]')
     expect(input.attributes('type')).toBe('password')
     expect(input.element.value).toBe(pairing.payload)
+    expect(wrapper.get('[data-testid="pairing-qr"]').attributes('aria-label')).toContain('QR')
+    expect(qrMocks.toCanvas).toHaveBeenCalled()
 
     await wrapper.get('[data-testid="toggle-pairing"]').trigger('click')
     expect(input.attributes('type')).toBe('text')
