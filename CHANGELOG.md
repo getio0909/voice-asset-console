@@ -6,6 +6,9 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Allow semver prerelease tags to carry the package's base version and disable
+  default BuildKit attestations before strict multi-platform OCI verification.
+
 - Updated the local Chromium mock capability fixtures to use the pinned
   `0.22.0` contract instead of stale `0.20.0` literals. The full local e2e
   gate now passes seven flows with ten explicitly skipped live/deployed flows;
