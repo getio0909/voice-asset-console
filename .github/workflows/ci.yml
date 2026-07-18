@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
           version: 11.5.0
           run_install: false
@@ -27,6 +27,9 @@ jobs:
         with:
           node-version: 24.15.0
           cache: pnpm
+
+      - name: Test OCI release verifier
+        run: node --test scripts/verify-oci-image.node-test.mjs scripts/container-release.node-test.mjs
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -49,6 +52,14 @@ jobs:
       - name: Build static bundle
         run: pnpm build-only
 
+      - name: Build hardened Console gateway image
+        run: docker build --tag voiceasset-console:ci .
+
+      - name: Validate Caddy configuration
+        run: >-
+          docker run --rm --entrypoint caddy voiceasset-console:ci
+          validate --config /etc/caddy/Caddyfile --adapter caddyfile
+
       - name: Upload static bundle
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
@@ -57,14 +68,14 @@ jobs:
           if-no-files-found: error
 
   e2e:
-    name: Playwright smoke test
+    name: Playwright Phase 1 browser flow
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
           version: 11.5.0
           run_install: false
@@ -81,7 +92,7 @@ jobs:
       - name: Install isolated Chromium
         run: pnpm exec playwright install --with-deps chromium
 
-      - name: Run browser smoke test
+      - name: Run Phase 1 browser flow
         run: pnpm test:e2e
 
       - name: Upload Playwright report
@@ -100,7 +111,7 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
           version: 11.5.0
           run_install: false
