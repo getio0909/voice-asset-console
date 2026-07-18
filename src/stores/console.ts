@@ -16,10 +16,13 @@ export interface CapabilitiesClient {
 export const useConsoleStore = defineStore('console', () => {
   const phase = ref<ConsolePhase>('initialization')
   const apiStatus = ref<ApiStatus>('not-configured')
+  const capabilities = ref<ServerCapabilities | null>(null)
   const compatibilityIssue = ref<string | null>(null)
   const serverVersion = ref<string | null>(null)
 
-  const phaseLabel = computed(() => (phase.value === 'initialization' ? 'Initialization' : 'Ready'))
+  const phaseLabel = computed(() =>
+    phase.value === 'initialization' ? 'Connecting' : 'Compatible server',
+  )
   const isReady = computed(() => phase.value === 'ready')
 
   function setApiStatus(status: ApiStatus): void {
@@ -27,29 +30,34 @@ export const useConsoleStore = defineStore('console', () => {
   }
 
   async function checkApi(client: CapabilitiesClient = apiClient): Promise<void> {
+    phase.value = 'initialization'
     setApiStatus('checking')
+    capabilities.value = null
     compatibilityIssue.value = null
     serverVersion.value = null
 
     try {
-      const capabilities = await client.getCapabilities()
-      if (capabilities.api_version !== API_VERSION) {
-        throw new Error(`Unsupported API version: ${capabilities.api_version}`)
+      const observed = await client.getCapabilities()
+      capabilities.value = observed
+      if (observed.api_version !== API_VERSION) {
+        throw new Error(`Unsupported API version: ${observed.api_version}`)
       }
-      if (capabilities.contract_version !== CONTRACT_VERSION) {
-        throw new Error(`Unsupported contract version: ${capabilities.contract_version}`)
+      if (observed.contract_version !== CONTRACT_VERSION) {
+        throw new Error(`Unsupported contract version: ${observed.contract_version}`)
       }
 
       const missing = REQUIRED_SERVER_FEATURES.filter(
-        (feature) => !capabilities.features.includes(feature),
+        (feature) => !observed.features.includes(feature),
       )
       if (missing.length > 0) {
         throw new Error(`Missing required Server features: ${missing.join(', ')}`)
       }
 
-      serverVersion.value = capabilities.server_version
+      serverVersion.value = observed.server_version
+      phase.value = 'ready'
       setApiStatus('available')
     } catch (error) {
+      phase.value = 'initialization'
       compatibilityIssue.value = error instanceof Error ? error.message : 'Capability check failed.'
       setApiStatus('unavailable')
     }
@@ -57,6 +65,7 @@ export const useConsoleStore = defineStore('console', () => {
 
   return {
     apiStatus: readonly(apiStatus),
+    capabilities: readonly(capabilities),
     checkApi,
     compatibilityIssue: readonly(compatibilityIssue),
     contractVersion: apiConfig.contractVersion,

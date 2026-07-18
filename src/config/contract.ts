@@ -1,9 +1,37 @@
 export const API_VERSION = 'v1'
-export const CONTRACT_VERSION = '0.1.0'
+export const CONTRACT_VERSION = '0.22.0'
 
 export const REQUIRED_SERVER_FEATURES = Object.freeze([
+  'account_password_change',
+  'admin_operations',
+  'aliyun_asr',
+  'asr_hotwords',
+  'asset_filters',
+  'asset_lifecycle',
+  'asset_purge',
+  'authenticated_audio',
   'capability_negotiation',
+  'deployment_settings_read',
+  'device_pairing',
+  'device_sessions',
+  'encrypted_provider_profiles',
+  'full_text_search',
   'health_checks',
+  'incremental_sync',
+  'llm_corrections',
+  'llm_glossaries',
+  'llm_provider_profiles',
+  'local_auth',
+  'membership_management',
+  'mock_asr',
+  'raw_transcripts',
+  'refresh_sessions',
   'request_ids',
+  'resumable_uploads',
   'structured_errors',
+  'tencent_asr',
+  'transcript_approval',
+  'transcription_jobs',
+  'waveforms',
+  'workspace_management',
 ] as const)
