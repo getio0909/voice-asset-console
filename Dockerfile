@@ -19,6 +19,9 @@ LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later" \
       org.opencontainers.image.version="${VERSION}"
 COPY Caddyfile /etc/caddy/Caddyfile
 COPY --from=build --chown=65532:65532 /src/dist/ /srv/
+# Compose serves only unprivileged port 8080. Remove the upstream image's
+# low-port file capability so no-new-privileges remains compatible with exec.
+RUN setcap -r /usr/bin/caddy
 USER 65532:65532
 EXPOSE 8080
 STOPSIGNAL SIGTERM
