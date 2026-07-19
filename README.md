@@ -77,11 +77,11 @@ directory:
 
 ```bash
 commit=$(git rev-parse HEAD)
-bash scripts/build-release.sh v0.1.0 dist-release
+bash scripts/build-release.sh v1.0.0 dist-release
 pnpm licenses:report
 mv third-party-licenses.json dist-release/
 bash scripts/write-checksums.sh dist-release
-bash scripts/verify-release.sh v0.1.0 "$commit" dist-release
+bash scripts/verify-release.sh v1.0.0 "$commit" dist-release
 ```
 
 The archive normalizes entry order, timestamps, ownership, and gzip metadata.
